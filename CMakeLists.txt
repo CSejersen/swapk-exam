@@ -3,4 +3,6 @@ project(swapk_exam)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(swapk_exam main.cpp)
+add_executable(swapk_exam main.cpp
+        RawMaterial.hpp
+        RawMaterial.cpp)
