@@ -51,13 +51,31 @@ build cmake_object_order_depends_target_swapk_exam: phony || CMakeFiles/swapk_ex
 
 build CMakeFiles/swapk_exam.dir/main.cpp.o: CXX_COMPILER__swapk_exam_unscanned_Debug /Users/sejersen/Documents/AU/5-semester/swapk-exam/main.cpp || cmake_object_order_depends_target_swapk_exam
   DEP_FILE = CMakeFiles/swapk_exam.dir/main.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -fcolor-diagnostics
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/swapk_exam.dir
   OBJECT_FILE_DIR = CMakeFiles/swapk_exam.dir
 
 build CMakeFiles/swapk_exam.dir/RawMaterial.cpp.o: CXX_COMPILER__swapk_exam_unscanned_Debug /Users/sejersen/Documents/AU/5-semester/swapk-exam/RawMaterial.cpp || cmake_object_order_depends_target_swapk_exam
   DEP_FILE = CMakeFiles/swapk_exam.dir/RawMaterial.cpp.o.d
-  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -fcolor-diagnostics
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/swapk_exam.dir
+  OBJECT_FILE_DIR = CMakeFiles/swapk_exam.dir
+
+build CMakeFiles/swapk_exam.dir/Machine.cpp.o: CXX_COMPILER__swapk_exam_unscanned_Debug /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machine.cpp || cmake_object_order_depends_target_swapk_exam
+  DEP_FILE = CMakeFiles/swapk_exam.dir/Machine.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/swapk_exam.dir
+  OBJECT_FILE_DIR = CMakeFiles/swapk_exam.dir
+
+build CMakeFiles/swapk_exam.dir/RoboticArm.cpp.o: CXX_COMPILER__swapk_exam_unscanned_Debug /Users/sejersen/Documents/AU/5-semester/swapk-exam/RoboticArm.cpp || cmake_object_order_depends_target_swapk_exam
+  DEP_FILE = CMakeFiles/swapk_exam.dir/RoboticArm.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/swapk_exam.dir
+  OBJECT_FILE_DIR = CMakeFiles/swapk_exam.dir
+
+build CMakeFiles/swapk_exam.dir/Controller.cpp.o: CXX_COMPILER__swapk_exam_unscanned_Debug /Users/sejersen/Documents/AU/5-semester/swapk-exam/Controller.cpp || cmake_object_order_depends_target_swapk_exam
+  DEP_FILE = CMakeFiles/swapk_exam.dir/Controller.cpp.o.d
+  FLAGS = -g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -fcolor-diagnostics
   OBJECT_DIR = CMakeFiles/swapk_exam.dir
   OBJECT_FILE_DIR = CMakeFiles/swapk_exam.dir
 
@@ -69,7 +87,7 @@ build CMakeFiles/swapk_exam.dir/RawMaterial.cpp.o: CXX_COMPILER__swapk_exam_unsc
 #############################################
 # Link the executable swapk_exam
 
-build swapk_exam: CXX_EXECUTABLE_LINKER__swapk_exam_Debug CMakeFiles/swapk_exam.dir/main.cpp.o CMakeFiles/swapk_exam.dir/RawMaterial.cpp.o
+build swapk_exam: CXX_EXECUTABLE_LINKER__swapk_exam_Debug CMakeFiles/swapk_exam.dir/main.cpp.o CMakeFiles/swapk_exam.dir/RawMaterial.cpp.o CMakeFiles/swapk_exam.dir/Machine.cpp.o CMakeFiles/swapk_exam.dir/RoboticArm.cpp.o CMakeFiles/swapk_exam.dir/Controller.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk
   OBJECT_DIR = CMakeFiles/swapk_exam.dir
   POST_BUILD = :
