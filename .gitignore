@@ -39,3 +39,61 @@
 
 # debug information files
 *.dwo
+
+# Build directories and common build artifacts
+build/
+dist/
+out/
+target/
+bin/
+obj/
+pkg/
+coverage/
+coverage.xml
+lcov-report/
+
+# C/C++ / Make / CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.exe
+*.out
+
+# IDEs and editors
+.idea/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln
+*.csproj
+*.sublime-workspace
+*.sublime-project
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs and archives
+*.log
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+
+# Test/report artifacts
+test-reports/
+reports/
+coverage/
+
+# Misc caches
+.cache/
+*.tmp
+*.temp
