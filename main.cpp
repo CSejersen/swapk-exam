@@ -19,7 +19,7 @@ int main() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
     // Preload material so the move step has something to transport
-    arm1.TryReceive(Data::AnyMaterial{Data::MetalPipe{}});
+    arm1.TryReceive(Data::AnyMaterial{Data::MetalPipe{Data::DataBuffer(1024)}});
 
     // Create a job with move and process steps
     Job job("demo-job");
@@ -29,8 +29,12 @@ int main() {
     // Extra step to demonstrate retry behavior when there's nothing left to process
     job.addStep(ProcessStep{cnc1, Data::MaterialKind::MetalPipe, Data::MaterialKind::MetalPipeHalf});
 
-    controller.executeJob(job);
-
+    try {
+      controller.executeJob(job);
+    }
+    catch (std::exception &e) {
+        std::cerr << "[ERROR] An exception occured! with error: " << e.what()<< std::endl;
+    }
     // Give worker threads time to execute enqueued commands before program exits
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
 

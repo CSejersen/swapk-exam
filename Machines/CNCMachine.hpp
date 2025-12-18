@@ -17,8 +17,8 @@ namespace Factory::Machinery {
             auto out = item.cutInHalf();
 
             // Store output for potential later pickup/transport
-            this->Emit(Factory::Data::AnyMaterial{std::move(out)});
-            std::cout << "[PRODUCER] " << this->Name() << " processed material_kind=" << Factory::Data::toString(T::kind) << "\n";
+            this->Emit(Data::AnyMaterial{std::move(out)});
+            std::cout << "[PRODUCER] " << this->Name() << " processed material_kind=" << Data::toString(T::kind) << std::endl;
         }
     };
 }

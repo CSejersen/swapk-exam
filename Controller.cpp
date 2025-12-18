@@ -97,7 +97,8 @@ namespace Factory {
 
             StepStatus stepStatus = future.get();
 
-            for (int retries = 0; stepStatus == RETRY && retries < 2; retries++) {
+            for (int retries = 0; stepStatus == RETRY && retries < 3; retries++) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                 std::cout << "[CONTROLLER] job: " << job.name()
                       << " retrying step number " << stepCounter
                       << " retry attempt " << (retries + 1)
@@ -109,7 +110,7 @@ namespace Factory {
                 stepStatus = future.get();
             }
 
-            switch (future.get()) {
+            switch (stepStatus) {
                 case SUCCESS:
                     std::cout << "[CONTROLLER] job: " << job.name()
                       << " step number " << stepCounter
@@ -125,12 +126,12 @@ namespace Factory {
         }
     }
 
-    void Controller::executeJobStep(const Factory::JobStep& step, std::promise<StepStatus>& promise) {
+    void Controller::executeJobStep(const JobStep& step, std::promise<StepStatus>& promise) {
         std::visit([this, &promise](const auto& s) {
             using S = std::decay_t<decltype(s)>;
-            if constexpr (std::is_same_v<S, Factory::MoveStep>) {
+            if constexpr (std::is_same_v<S, MoveStep>) {
                 onTransportRequested(&s.mover.get(), s.material, s.destination.get(), promise);
-            } else if constexpr (std::is_same_v<S, Factory::ProcessStep>) {
+            } else if constexpr (std::is_same_v<S, ProcessStep>) {
                 onProcessRequested(s.material, s.executor.get(), promise);
             }
         }, step);

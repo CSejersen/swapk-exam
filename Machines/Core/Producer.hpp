@@ -28,7 +28,7 @@ namespace Factory::Machinery {
             if (!CanAccept(Data::kind_of(material))) {
                 throw std::invalid_argument("Producer received material of non-compatible type");
             }
-            inventory_.push(std::move(material));
+            inventory_.push(std::get<T>(std::move(material)));
         }
 
     protected:
@@ -38,7 +38,7 @@ namespace Factory::Machinery {
                     Name(), Data::toString(cmd.material_kind), Data::toString(T::kind)));
             }
             if (inventory_.empty()) {
-                std::cout << "[PRODUCER] " << Name() << " has no material of material_kind " << Data::toString(T::kind) << std::endl;
+                std::cout << "[PRODUCER] " << Name() << " has no material of material_kind " << Data::toString(T::kind) << ". Retrying!" << std::endl;
                 return RETRY;
             }
             auto item = &inventory_.front();
@@ -54,33 +54,14 @@ namespace Factory::Machinery {
 
         // Optional helper for derived producers: store output material for later pickup.
         void Emit(Data::AnyMaterial&& out) {
-            outputs_.push(std::move(out));
-        }
-
-        bool TryPopOutput(Data::MaterialKind kind, Data::AnyMaterial& out) {
-            if (outputs_.empty()) return false;
-            std::queue<Data::AnyMaterial> rest;
-            bool found = false;
-
-            while (!outputs_.empty()) {
-                auto item = std::move(outputs_.front());
-                outputs_.pop();
-                if (!found && Data::kind_of(item) == kind) {
-                    out = std::move(item);
-                    found = true;
-                    continue;
-                }
-                rest.push(std::move(item));
-            }
-            outputs_ = std::move(rest);
-            return found;
+            outputs_[Data::kind_of(out)].push(std::move(out));
         }
 
         virtual void ProcessOne(T&& item) = 0;
 
     private:
         std::queue<T> inventory_;
-        std::queue<Data::AnyMaterial> outputs_;
+        std::unordered_map<Data::MaterialKind, std::queue<Data::AnyMaterial>> outputs_;
     };
 }
 
