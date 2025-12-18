@@ -1,7 +1,9 @@
 #pragma once
 #include <concepts>
 
-template<typename T>
-concept IsMachine = requires(T& t) {
-
-};
+namespace Factory::Data {
+    template<class T>
+    concept CNCCompatible = requires(T t) {
+        t.cutInHalf();
+    };
+}
