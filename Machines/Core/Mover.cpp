@@ -2,43 +2,37 @@
 #include <exception>
 #include <iostream>
 
+#include "../../MachineConepts.hpp"
+
 namespace Factory::Machinery{
-    bool Mover::TryReceive(Factory::Data::AnyMaterial&& material) {
+    void Mover::TryReceive(Data::AnyMaterial&& material) {
         std::cout << "[MOVER] " << Name() << " received material" << std::endl;
-        inventory_.push(std::move(material));
-        return true;
+        if (!CanAccept(Data::kind_of(material))) {
+            throw std::invalid_argument("Mover received material of non-compatible type");
+        }
+        inventory_[Data::kind_of(material)].push(std::move(material));
     }
 
-    bool Mover::OnTransport(const TransportCommand& cmd) {
-
+    StepStatus Mover::OnTransport(const TransportCommand& cmd) {
         // Find first matching item in inventory
-        if (inventory_.empty()) {
-            std::cout << "[MOVER] " << Name() << " has no inventory\n";
-            return false;
+        if (inventory_[cmd.material_kind].empty()) {
+            std::cout << "[MOVER] " << Name() << " has no materials of kind: "<< toString(cmd.material_kind) << std::endl;
+            return RETRY;
         }
 
-        std::queue<Factory::Data::AnyMaterial> rest;
-        bool moved = false;
+        const auto it = &inventory_[cmd.material_kind].front();
 
-        while (!inventory_.empty()) {
-            auto item = std::move(inventory_.front());
-            inventory_.pop();
-
-            if (!moved && Factory::Data::kind_of(item) == cmd.kind) {
-                moved = cmd.destination.TryReceive(std::move(item));
-                continue;
-            }
-            rest.push(std::move(item));
+        try {
+            cmd.destination.TryReceive(std::move(*it));
+        } catch (std::exception& e) {
+            std::cerr << "[MOVER] " << Name() << " the destination: " << cmd.destination.Name()
+                      << " failed to receive material_kind=" << Data::toString(cmd.material_kind)
+                      << " with error: " << e.what() << std::endl;
+            throw;
         }
-
-        inventory_ = std::move(rest);
-
-        if (!moved) {
-            std::cout << "[MOVER] " << Name() << " could not move kind=" << Factory::Data::toString(cmd.kind) << "\n";
-            return false;
-        }
-        std::cout << "[MOVER] " << Name() << " moved kind=" << Factory::Data::toString(cmd.kind) << " to " << cmd.destination.Name() << "\n";
-        return true;
+        inventory_[cmd.material_kind].pop();
+        std::cout << "[MOVER] " << Name() << " moved material_kind=" << Data::toString(cmd.material_kind) << " to " << cmd.destination.Name() << std::endl;
+        return SUCCESS;
     }
 
 }

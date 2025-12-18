@@ -9,6 +9,8 @@
 #include <variant>
 
 namespace Factory {
+
+
     struct MoveStep {
         std::reference_wrapper<Machinery::Mover> mover;
         Data::MaterialKind material;

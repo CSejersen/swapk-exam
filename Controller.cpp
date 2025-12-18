@@ -17,7 +17,7 @@ namespace Factory {
                 this,
                 mover,      // targetMover - bound at connection time
                 _1,         // requestedMover - from signal
-                _2,         // kind - from signal
+                _2,         // material_kind - from signal
                 _3,         // destination - from signal
                 _4          // cmdCompleted - from signal
             )
@@ -37,7 +37,7 @@ namespace Factory {
                 &Controller::HandleProcess,
                 this,
                 producer,   // targetProducer - bound at connection time
-                _1,         // kind - from signal
+                _1,         // material_kind - from signal
                 _2,         // requestedTarget - from signal
                 _3          // cmdCompleted - from signal
             )
@@ -52,7 +52,7 @@ namespace Factory {
         Machinery::Mover* requestedMover,
         Data::MaterialKind kind,
         Machinery::MachineBase& destination,
-        std::promise<bool>& cmdCompleted)
+        std::promise<StepStatus>& cmdCompleted)
     {
         // Only handle if this is the mover we're bound to
         if (requestedMover != targetMover) {
@@ -67,7 +67,7 @@ namespace Factory {
         Machinery::MachineBase* targetProducer,
         Data::MaterialKind kind,
         Machinery::MachineBase& requestedTarget,
-        std::promise<bool>& cmdCompleted)
+        std::promise<StepStatus>& cmdCompleted)
     {
         // Only handle if this is the producer we're bound to
         if (&requestedTarget != targetProducer) {
@@ -78,48 +78,54 @@ namespace Factory {
         targetProducer->EnqueueCommand(std::move(command));
     }
 
+
+
     void Controller::executeJob(Job job) {
         int stepCounter = 1;
-        int retries = 0;
 
         while (!job.stepsEmpty()) {
-            std::cout << "[CONTROLLER] job: " << job.name() 
-                      << " executing step number " << stepCounter 
-                      << ". Attempt number: " << retries + 1 << std::endl;
+            std::cout << "[CONTROLLER] job: " << job.name()
+                      << " executing step number " << stepCounter
+                      <<  std::endl;
 
             const auto& currentStep = job.getNextStep();
-            std::promise<bool> promise;
+            std::promise<StepStatus> promise;
             auto future = promise.get_future();
 
             executeJobStep(currentStep, promise);
             future.wait();
 
-            bool success = future.get();
-            if (!success) {
-                std::cout << "[CONTROLLER] job: " << job.name() 
-                          << " step number " << stepCounter << " failed" << std::endl;
-                if (retries >= 2) {
-                    std::cout << "[CONTROLLER] job: " << job.name() 
-                              << " step number " << stepCounter 
-                              << " exceeded max retries, aborting job" << std::endl;
-                    break;
-                }
-                retries++;
-                continue;
+            StepStatus stepStatus = future.get();
+
+            for (int retries = 0; stepStatus == RETRY && retries < 2; retries++) {
+                std::cout << "[CONTROLLER] job: " << job.name()
+                      << " retrying step number " << stepCounter
+                      << " retry attempt " << (retries + 1)
+                      <<  std::endl;
+                promise = std::promise<StepStatus>();
+                future = promise.get_future();
+                executeJobStep(currentStep, promise);
+                future.wait();
+                stepStatus = future.get();
             }
 
-            std::cout << "[CONTROLLER] job: " << job.name() 
-                      << " step number " << stepCounter 
+            switch (future.get()) {
+                case SUCCESS:
+                    std::cout << "[CONTROLLER] job: " << job.name()
+                      << " step number " << stepCounter
                       << " completed successfully" << std::endl;
-            job.popStep();
-            stepCounter++;
-            retries = 0;
+                    job.popStep();
+                    stepCounter++;
+                    break;
+                case RETRY:
+                    throw std::runtime_error("Job execution failed due to exceeding max retries");
+                case ERROR:
+                    throw std::runtime_error("Job execution failed due to critical error");
+            }
         }
-
-        std::cout << "[CONTROLLER] job: " << job.name() << " finished" << std::endl;
     }
 
-    void Controller::executeJobStep(const Factory::JobStep& step, std::promise<bool>& promise) {
+    void Controller::executeJobStep(const Factory::JobStep& step, std::promise<StepStatus>& promise) {
         std::visit([this, &promise](const auto& s) {
             using S = std::decay_t<decltype(s)>;
             if constexpr (std::is_same_v<S, Factory::MoveStep>) {

@@ -24,6 +24,7 @@ add_executable(swapk_exam main.cpp
         Machines/Core/Mover.hpp
         Job.cpp
         Job.hpp
+        Shared.hpp
 )
 
 

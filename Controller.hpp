@@ -40,13 +40,13 @@ namespace Factory {
                 Machinery::Mover* mover,
                 Data::MaterialKind material,
                 Machinery::MachineBase& destination,
-                std::promise<bool>& cmdCompleted
+                std::promise<StepStatus>& cmdCompleted
         )> onTransportRequested;
 
         boost::signals2::signal<void (
                 Data::MaterialKind material,
                 Machinery::MachineBase& target,
-                std::promise<bool>& cmdCompleted
+                std::promise<StepStatus>& cmdCompleted
         )> onProcessRequested;
 
         void executeJob(Job job);
@@ -62,17 +62,17 @@ namespace Factory {
             Machinery::Mover* requestedMover,
             Data::MaterialKind kind,
             Machinery::MachineBase& destination,
-            std::promise<bool>& cmdCompleted
+            std::promise<StepStatus>& cmdCompleted
         );
 
         void HandleProcess(
             Machinery::MachineBase* targetProducer,
             Data::MaterialKind kind,
             Machinery::MachineBase& requestedTarget,
-            std::promise<bool>& cmdCompleted
+            std::promise<StepStatus>& cmdCompleted
         );
 
-        void executeJobStep(const JobStep& step, std::promise<bool>& promise);
+        void executeJobStep(const JobStep& step, std::promise<StepStatus>& promise);
 
         // Owned machines with unique_ptr for proper lifetime management
         std::vector<std::unique_ptr<Machinery::MachineBase>> ownedMachines_;

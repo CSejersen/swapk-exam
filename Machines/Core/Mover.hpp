@@ -1,5 +1,6 @@
 #pragma once
 #include "MachineBase.hpp"
+#include "../../Shared.hpp"
 
 namespace Factory::Machinery {
     class Mover : public MachineBase {
@@ -7,13 +8,13 @@ namespace Factory::Machinery {
         using MachineBase::MachineBase;
 
         // Receiver API (via MachineBase)
-        bool TryReceive(Factory::Data::AnyMaterial&& material) override;
-        bool CanAccept(Factory::Data::MaterialKind) const override { return true; }
+        void TryReceive(Data::AnyMaterial&& material) override;
+        bool CanAccept(Data::MaterialKind) const noexcept override { return true; }
 
     protected:
-        bool OnTransport(const TransportCommand& cmd) override;
+        StepStatus OnTransport(const TransportCommand& cmd) override;
 
     private:
-        std::queue<Factory::Data::AnyMaterial> inventory_;
+        std::unordered_map<Data::MaterialKind, std::queue<Data::AnyMaterial>> inventory_;
     };
 }

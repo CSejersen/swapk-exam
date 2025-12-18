@@ -1,7 +1,4 @@
 #pragma once
-// Typed machine layer: enforces a single input type `T` and gives derived machines typed processing.
-//
-// Transport/routing can target `MachineBase` to allow destinations with different `T`.
 
 #include "MachineBase.hpp"
 
@@ -23,35 +20,36 @@ namespace Factory::Machinery {
         using MachineBase::MachineBase;
 
         // Receiver API (via MachineBase)
-        bool CanAccept(Data::MaterialKind kind) const override {
+        bool CanAccept(Data::MaterialKind kind) const noexcept override {
             return kind == T::kind;
         }
 
-        bool TryReceive(Data::AnyMaterial&& material) override {
-            if (auto* p = std::get_if<T>(&material)) {
-                input_.push(std::move(*p));
-                return true;
+        void TryReceive(Data::AnyMaterial&& material) override {
+            if (!CanAccept(Data::kind_of(material))) {
+                throw std::invalid_argument("Producer received material of non-compatible type");
             }
-            return false;
+            inventory_.push(std::move(material));
         }
 
     protected:
-        bool OnProcess(const ProcessCommand& cmd) override {
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-            if (cmd.kind != T::kind) {
-                std::cout << "[PRODUCER] " << Name() << " material kind mismatch for processing: got="
-                          << Data::toString(cmd.kind) << " expected: " << Data::toString(T::kind) << "\n";
-                return false;
+        StepStatus OnProcess(const ProcessCommand& cmd) override {
+            if (cmd.material_kind != T::kind) {
+                throw std::invalid_argument(std::format("[PRODUCER] {} material material_kind mismatch for processing: got={} expected: {}\n",
+                    Name(), Data::toString(cmd.material_kind), Data::toString(T::kind)));
             }
-            if (input_.empty()) {
-                std::cout << "[PRODUCER] " << Name() << " has no material of kind " << Data::toString(T::kind) << "\n";
-                return false;
+            if (inventory_.empty()) {
+                std::cout << "[PRODUCER] " << Name() << " has no material of material_kind " << Data::toString(T::kind) << std::endl;
+                return RETRY;
             }
-
-            T item = std::move(input_.front());
-            input_.pop();
-            ProcessOne(std::move(item));
-            return true;
+            auto item = &inventory_.front();
+            try {
+                ProcessOne(std::move(*item));
+            } catch (std::exception& e) {
+                std::cerr << "[PRODUCER] " << Name() << " failed to process material of material_kind " << Data::toString(T::kind) << " with error: " << e.what() << std::endl;
+                return ERROR;
+            }
+            inventory_.pop();
+            return SUCCESS;
         }
 
         // Optional helper for derived producers: store output material for later pickup.
@@ -81,7 +79,7 @@ namespace Factory::Machinery {
         virtual void ProcessOne(T&& item) = 0;
 
     private:
-        std::queue<T> input_;
+        std::queue<T> inventory_;
         std::queue<Data::AnyMaterial> outputs_;
     };
 }

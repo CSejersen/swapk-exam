@@ -11,39 +11,48 @@
 #include <variant>
 #include <iostream>
 #include <future>
+#include "../Shared.hpp"
 
 namespace Factory::Machinery {
 
     class MachineBase;
 
     struct TransportCommand {
-        Factory::Data::MaterialKind kind;
+        Data::MaterialKind material_kind;
         MachineBase& destination;
-        std::promise<bool> &cmdCompleted;
+        std::promise<StepStatus> &cmdCompleted;
     };
 
     struct ProcessCommand {
-        Factory::Data::MaterialKind kind;
-        std::promise<bool> &cmdCompleted;
+        Data::MaterialKind material_kind;
+        std::promise<StepStatus> &cmdCompleted;
     };
 
     using Command = std::variant<TransportCommand, ProcessCommand>;
 
     class MachineBase {
     public:
-        explicit MachineBase(std::string name)
+        explicit MachineBase(std::string name) noexcept
             : name_(std::move(name)) {}
 
         virtual ~MachineBase() {
             StopThread();
         }
 
-        std::string_view Name() const { return name_; }
+        std::string_view Name() const noexcept { return name_; };
 
-        virtual bool TryReceive(Factory::Data::AnyMaterial&& material) = 0;
-        virtual bool CanAccept(Factory::Data::MaterialKind kind) const = 0;
+        /**
+         * Attempts to deliver material to this machine.
+         * @throws std::invalid_argument if material type is not compatible
+         * @param material
+         * Exception guarantee: strong
+         * No changes to inventory on throws.
+         */
+        virtual void TryReceive(Data::AnyMaterial&& material) = 0;
 
-        void EmergencyStop() {
+        virtual bool CanAccept(Data::MaterialKind kind) const noexcept = 0;
+
+        void EmergencyStop() noexcept{
             shouldStop_.store(true);
             workCondition_.notify_all();
         }
@@ -52,27 +61,54 @@ namespace Factory::Machinery {
             // Placeholder
         }
 
+        /** Starts the internal worker thread. No-op if already running.
+         *
+         * @throws std::system_error if thread creation fails
+         * Exception guarantee: strong
+         * Running flag remains false on throws.
+         */
         void StartThread() {
             if (running_.exchange(true)) {
                 return;
             }
             shouldStop_.store(false);
-            workerThread_ = std::thread(&MachineBase::WorkerLoop, this);
+            try {
+                workerThread_ = std::thread(&MachineBase::WorkerLoop, this);
+            } catch (...) {
+                running_.store(false);
+                throw;
+            }
+
         }
 
-        void StopThread() {
+        /** Stops the internal worker thread. No-op if not running.
+         *
+         * Exception guarantee: no-throw
+         */
+        void StopThread() noexcept {
             if (!running_.exchange(false)) {
                 return;
             }
             shouldStop_.store(true);
             workCondition_.notify_all();
             if (workerThread_.joinable()) {
-                workerThread_.join();
+                try {
+                    workerThread_.join();
+                } catch (...) {
+                    std::cerr << "[ERROR] Failed to join worker thread for machine: " << Name() << std::endl;
+                }
+
             }
         }
-
+        /** Enqueues a command for processing by the internal worker thread.
+         *
+         * @throws std::exception on enqueue failure
+         * Exception guarantee: strong
+         * No changes to work queue on throws.
+         */
         void EnqueueCommand(Command const &cmd) {
-            std::visit([this](const auto& c) {
+            try {
+                std::visit([this](const auto& c) {
                 using C = std::decay_t<decltype(c)>;
                 if constexpr (std::is_same_v<C, TransportCommand>) {
                     std::cout << "[MOVER] " << Name() << " enqueued transport command" << std::endl;
@@ -80,19 +116,48 @@ namespace Factory::Machinery {
                     std::cout << "[PRODUCER] " << Name() << " enqueued process command" << std::endl;
                 }
             }, cmd);
+            } catch (...) {
+                std::cout << "[MACHINE] Failed to deduce machine type proceeding to enqueue command" << std::endl;
+            }
             {
-                std::lock_guard<std::mutex> lock(workMutex_);
-                workQueue_.push(cmd);
+                try {
+                    std::lock_guard<std::mutex> lock(workMutex_);
+                    workQueue_.push(cmd);
+                } catch (std::exception &e) {
+                    std::cerr << "[ERROR] Failed to enqueue command with error: " << e.what() << std::endl;
+                    throw;
+                }
+
             }
             workCondition_.notify_one();
         }
 
     protected:
 
-        virtual bool OnTransport(const TransportCommand&) {return false;}
-        virtual bool OnProcess(const ProcessCommand&) {return false;}
+        /** Override to handle transport commands.
+         *
+         * @param cmd TransportCommand to process
+         * @return true on success, false on failure
+         * Exception guarantee: strong
+         * No changes to machine state on throws.
+         */
+        virtual StepStatus OnTransport(const TransportCommand&) {return ERROR;}
+
+        /** Override to handle process commands.
+         *
+         * @param cmd ProcessCommand to process
+         * @return true on success, false on failure
+         * @throws std::invalid_argument if the material is not compatible
+         * Exception guarantee: strong
+         * No changes to machine state on throws.
+         */
+        virtual StepStatus OnProcess(const ProcessCommand&) {return ERROR;}
 
     private:
+        /** Internal worker loop processing commands from the queue.
+         *
+         * Exception guarantee:
+         */
         void WorkerLoop() {
             while (!shouldStop_.load()) {
                 std::unique_lock<std::mutex> lock(workMutex_);
@@ -109,13 +174,24 @@ namespace Factory::Machinery {
 
                 std::visit([this](auto&& c) {
                     using C = std::decay_t<decltype(c)>;
+                    StepStatus success;
                     if constexpr (std::is_same_v<C, TransportCommand>) {
                         std::cout << "[MOVER] " << Name() << " picking up transport command from queue"  << std::endl;
-                        bool success = OnTransport(c);
+                        try {
+                            success = OnTransport(c);
+                        } catch (std::exception &e) {
+                            std::cerr << "[ERROR] Failed to execute the transport command with error: " << e.what() << std::endl;
+                            success = ERROR;
+                        }
                         c.cmdCompleted.set_value(success);
                     } else if constexpr (std::is_same_v<C, ProcessCommand>) {
                         std::cout << "[PRODUCER] " << name_ << " picking up process command from queue" << std::endl;
-                        bool success = OnProcess(c);
+                        try {
+                            success = OnProcess(c);
+                        } catch (std::exception &e) {
+                            std::cerr << "[ERROR] Failed to execute the process command with error: " << e.what() << std::endl;
+                            success = ERROR;
+                        }
                         c.cmdCompleted.set_value(success);
                     }
                 }, cmd);
