@@ -25,9 +25,9 @@ namespace Factory {
 
             // Compile-time dispatch based on machine type traits
             if constexpr (Machinery::is_mover_v<MachineT>) {
-                ConnectMoverSignals(ptr);
+                ConnectMoverSignal(ptr);
             } else if constexpr (Machinery::is_producer_v<MachineT>) {
-                ConnectProducerSignals(ptr);
+                ConnectProducerSignal(ptr);
             }
 
             ownedMachines_.push_back(std::move(machine));
@@ -53,8 +53,8 @@ namespace Factory {
 
     private:
         // Signal connection helpers using std::bind
-        void ConnectMoverSignals(Machinery::Mover* mover);
-        void ConnectProducerSignals(Machinery::MachineBase* producer);
+        void ConnectMoverSignal(Machinery::Mover* mover);
+        void ConnectProducerSignal(Machinery::MachineBase* producer);
 
         // Signal handlers (bound via std::bind)
         void HandleTransport(

@@ -1,18 +1,9 @@
 # ninja log v5
-12	870	1765967371490089350	CMakeFiles/swapk_exam.dir/Materials/MetalPipe.cpp.o	b7c0babd85c988fa
-7	1639	1765969974756015748	CMakeFiles/swapk_exam.dir/Controller.cpp.o	5e07038c842d032f
-1639	1744	1765969974869349362	swapk_exam	39cafbbadcb35b2e
-7	1440	1765969974556100174	CMakeFiles/swapk_exam.dir/main.cpp.o	795216ce7edacc1b
-11	907	1765967371531018241	CMakeFiles/swapk_exam.dir/Materials/Material.cpp.o	814947a4791f3de7
-0	74	1765973607384926446	build.ninja	bab969b2dc10e1f1
-6	690	1765969263772303852	CMakeFiles/swapk_exam.dir/Machines/Core/Producer.cpp.o	6a5e29311c7167db
-15	778	1765462666906332597	CMakeFiles/swapk_exam.dir/RawMaterial.cpp.o	b545f069270fa37c
-6	808	1765971123115357115	CMakeFiles/swapk_exam.dir/Machines/Core/Mover.cpp.o	544e3d8f13952fa8
-0	138	1765967750682658915	/Users/sejersen/Documents/AU/5-semester/swapk-exam/cmake-build-debug/cmake_install.cmake	2033486ff347f4c2
-7	770	1765977785342002820	CMakeFiles/swapk_exam.dir/Job.cpp.o	99a62903bda88869
-7	1297	1765977785867721885	CMakeFiles/swapk_exam.dir/main.cpp.o	795216ce7edacc1b
-7	1786	1765977786355585680	CMakeFiles/swapk_exam.dir/Controller.cpp.o	5e07038c842d032f
-1786	1899	1765977786474116915	swapk_exam	c04b1456b8babfda
-6	1148	1765977939247789210	CMakeFiles/swapk_exam.dir/main.cpp.o	795216ce7edacc1b
-7	1559	1765977939655398667	CMakeFiles/swapk_exam.dir/Controller.cpp.o	5e07038c842d032f
-1559	1663	1765977939770708479	swapk_exam	c04b1456b8babfda
+1	811	1766055007682115397	CMakeFiles/swapk_exam.dir/Job.cpp.o	99a62903bda88869
+1	850	1766055007721851410	CMakeFiles/swapk_exam.dir/Machines/Core/Mover.cpp.o	544e3d8f13952fa8
+0	1834	1766055008698468139	CMakeFiles/swapk_exam.dir/main.cpp.o	795216ce7edacc1b
+1	1852	1766055008721407087	CMakeFiles/swapk_exam.dir/Controller.cpp.o	5e07038c842d032f
+1852	1899	1766055008776157663	swapk_exam	c04b1456b8babfda
+7	1880	1766055116123901122	CMakeFiles/swapk_exam.dir/main.cpp.o	795216ce7edacc1b
+7	1915	1766055116160608006	CMakeFiles/swapk_exam.dir/Controller.cpp.o	5e07038c842d032f
+1915	2050	1766055116310905256	swapk_exam	c04b1456b8babfda

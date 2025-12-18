@@ -6,7 +6,7 @@
 
 namespace Factory {
 
-    void Controller::ConnectMoverSignals(Machinery::Mover* mover) {
+    void Controller::ConnectMoverSignal(Machinery::Mover* mover) {
         using namespace std::placeholders;
 
         // Use std::bind to create a callable that captures the target mover
@@ -23,11 +23,11 @@ namespace Factory {
             )
         );
 
-        std::cout << "[CONTROLLER] Connected transport signals for mover: " 
+        std::cout << "[CONTROLLER] Connected transport signal for mover: "
                   << mover->Name() << std::endl;
     }
 
-    void Controller::ConnectProducerSignals(Machinery::MachineBase* producer) {
+    void Controller::ConnectProducerSignal(Machinery::MachineBase* producer) {
         using namespace std::placeholders;
 
         // Use std::bind to create a callable that captures the target producer
@@ -43,7 +43,7 @@ namespace Factory {
             )
         );
 
-        std::cout << "[CONTROLLER] Connected process signals for producer: " 
+        std::cout << "[CONTROLLER] Connected process signal for producer: "
                   << producer->Name() << std::endl;
     }
 
