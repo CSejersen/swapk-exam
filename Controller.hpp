@@ -1,4 +1,5 @@
 #pragma once
+#include <future>
 #include <vector>
 #include "Machines/Core/Mover.hpp"
 #include "Machines/Core/Producer.hpp"
@@ -13,31 +14,35 @@ namespace Factory {
         Controller();
         void Setup();
 
+        void AddMachine(Machinery::MachineBase* machine);
+
         // Accessors for demo/tests (instances are created in Setup()).
         // Valid after calling Setup().
-        Factory::Machinery::Mover& Arm1();
-        Factory::Machinery::MachineBase& CNC1();
+        Machinery::Mover& Arm1();
+        Machinery::MachineBase& CNC1();
 
         // Signals
         boost::signals2::signal<void (
-                Factory::Machinery::Mover* mover,
-                Factory::Data::MaterialKind material,
-                Factory::Machinery::MachineBase& destination
+                Machinery::Mover* mover,
+                Data::MaterialKind material,
+                Machinery::MachineBase& destination,
+                std::promise<bool>& cmdCompleted
         )> onTransportRequested;
 
         boost::signals2::signal<void (
-                Factory::Data::MaterialKind material,
-                Factory::Machinery::MachineBase& target
+                Data::MaterialKind material,
+                Machinery::MachineBase& target,
+                std::promise<bool>& cmdCompleted
         )> onProcessRequested;
 
-        void executeJob(Factory::Job);
+        void executeJob(Job);
 
     private:
-        void executeJobStep(const Factory::JobStep& step);
-        std::vector<std::unique_ptr<Factory::Machinery::MachineBase>> machines;
+        void executeJobStep(const JobStep& step, std::promise<bool>& promise);
+        std::vector<Machinery::MachineBase*> machines;
 
-        Factory::Machinery::Mover* arm1_{nullptr};
-        Factory::Machinery::MachineBase* cnc1_{nullptr};
+        Machinery::Mover* arm1_{nullptr};
+        Machinery::MachineBase* cnc1_{nullptr};
     };
 }
 

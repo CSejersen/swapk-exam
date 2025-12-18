@@ -12,11 +12,12 @@ namespace Factory::Machinery {
 
         // Mover-specific public API for scheduling work
         void EnqueueCommand(TransportCommand command) {
+            std::cout << "[MOVER] " << Name() << " added transport command to queue" << std::endl;
             Enqueue(std::move(command));
         }
 
     protected:
-        void OnTransport(const TransportCommand& cmd) override;
+        bool OnTransport(const TransportCommand& cmd) override;
 
     private:
         std::queue<Factory::Data::AnyMaterial> inventory_;

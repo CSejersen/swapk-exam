@@ -18,7 +18,7 @@ namespace Factory::Machinery {
 
             // Store output for potential later pickup/transport
             this->Emit(Factory::Data::AnyMaterial{std::move(out)});
-            std::cout << "[CNC] " << this->Name() << " processed kind=" << Factory::Data::toString(T::kind) << "\n";
+            std::cout << "[PRODUCER] " << this->Name() << " processed kind=" << Factory::Data::toString(T::kind) << "\n";
         }
     };
 }

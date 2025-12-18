@@ -10,6 +10,7 @@
 #include <thread>
 #include <variant>
 #include <iostream>
+#include <future>
 
 namespace Factory::Machinery {
 
@@ -18,10 +19,12 @@ namespace Factory::Machinery {
     struct TransportCommand {
         Factory::Data::MaterialKind kind;
         MachineBase& destination;
+        std::promise<bool> &cmdCompleted;
     };
 
     struct ProcessCommand {
         Factory::Data::MaterialKind kind;
+        std::promise<bool> &cmdCompleted;
     };
 
     using Command = std::variant<TransportCommand, ProcessCommand>;
@@ -69,17 +72,16 @@ namespace Factory::Machinery {
         }
 
     protected:
-        void Enqueue(Command cmd) {
+        void Enqueue(Command const &cmd) {
             {
                 std::lock_guard<std::mutex> lock(workMutex_);
                 workQueue_.push(cmd);
             }
-            std::cout << "[MACHINE] " << name_ << " added command to queue" << std::endl;
             workCondition_.notify_one();
         }
 
-        virtual void OnTransport(const TransportCommand&) {}
-        virtual void OnProcess(const ProcessCommand&) {}
+        virtual bool OnTransport(const TransportCommand&) {return false;}
+        virtual bool OnProcess(const ProcessCommand&) {return false;}
 
     private:
         void WorkerLoop() {
@@ -99,11 +101,13 @@ namespace Factory::Machinery {
                 std::visit([this](auto&& c) {
                     using C = std::decay_t<decltype(c)>;
                     if constexpr (std::is_same_v<C, TransportCommand>) {
-                        std::cout << "[MACHINE] " << name_ << " received transport command" << " calling OnTransport()" << std::endl;
-                        OnTransport(c);
+                        std::cout << "[MOVER] " << Name() << " picking up transport command from queue"  << std::endl;
+                        bool success = OnTransport(c);
+                        c.cmdCompleted.set_value(success);
                     } else if constexpr (std::is_same_v<C, ProcessCommand>) {
-                        std::cout << "[MACHINE] " << name_ << " received process command" << " calling OnProcess()" << std::endl;
-                        OnProcess(c);
+                        std::cout << "[PRODUCER] " << name_ << " picking up process command from queue" << std::endl;
+                        bool success = OnProcess(c);
+                        c.cmdCompleted.set_value(success);
                     }
                 }, cmd);
             }

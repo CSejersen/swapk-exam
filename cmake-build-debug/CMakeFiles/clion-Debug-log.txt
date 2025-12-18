@@ -1,4 +1,37 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S /Users/sejersen/Documents/AU/5-semester/swapk-exam -B /Users/sejersen/Documents/AU/5-semester/swapk-exam/cmake-build-debug
--- Configuring done (0.1s)
+/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles" -S /Users/uffehandrup/Library/CloudStorage/OneDrive-Personligt/Uni/Bachelor/5_semester/AdvProg/swapk-exam -B /Users/uffehandrup/Library/CloudStorage/OneDrive-Personligt/Uni/Bachelor/5_semester/AdvProg/swapk-exam/cmake-build-debug
+-- The C compiler identification is AppleClang 17.0.0.17000013
+-- The CXX compiler identification is AppleClang 17.0.0.17000013
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMake Warning (dev) at CMakeLists.txt:10 (find_package):
+  Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT
+  variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the
+  cmake_policy command to set the policy and suppress this warning.
+
+  CMake variable BOOST_ROOT is set to:
+
+    /opt/homebrew
+
+  For compatibility, find_package is ignoring the variable, but code in a
+  .cmake module might still use it.
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+CMake Warning (dev) at CMakeLists.txt:10 (find_package):
+  Policy CMP0167 is not set: The FindBoost module is removed.  Run "cmake
+  --help-policy CMP0167" for policy details.  Use the cmake_policy command to
+  set the policy and suppress this warning.
+
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found Boost: /opt/homebrew/lib/cmake/Boost-1.89.0/BoostConfig.cmake (found version "1.89.0") found components: filesystem
+-- Configuring done (1.6s)
 -- Generating done (0.0s)
--- Build files have been written to: /Users/sejersen/Documents/AU/5-semester/swapk-exam/cmake-build-debug
+-- Build files have been written to: /Users/uffehandrup/Library/CloudStorage/OneDrive-Personligt/Uni/Bachelor/5_semester/AdvProg/swapk-exam/cmake-build-debug

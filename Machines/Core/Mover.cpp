@@ -4,16 +4,17 @@
 
 namespace Factory::Machinery{
     bool Mover::TryReceive(Factory::Data::AnyMaterial&& material) {
-        std::cout << "[MACHINE] " << Name() << " received material" << std::endl;
+        std::cout << "[MOVER] " << Name() << " received material" << std::endl;
         inventory_.push(std::move(material));
         return true;
     }
 
-    void Mover::OnTransport(const TransportCommand& cmd) {
+    bool Mover::OnTransport(const TransportCommand& cmd) {
+
         // Find first matching item in inventory
         if (inventory_.empty()) {
             std::cout << "[MOVER] " << Name() << " has no inventory\n";
-            return;
+            return false;
         }
 
         std::queue<Factory::Data::AnyMaterial> rest;
@@ -34,7 +35,10 @@ namespace Factory::Machinery{
 
         if (!moved) {
             std::cout << "[MOVER] " << Name() << " could not move kind=" << Factory::Data::toString(cmd.kind) << "\n";
+            return false;
         }
+        std::cout << "[MOVER] " << Name() << " moved kind=" << Factory::Data::toString(cmd.kind) << " to " << cmd.destination.Name() << "\n";
+        return true;
     }
 
 }

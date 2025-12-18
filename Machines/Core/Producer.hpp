@@ -14,7 +14,7 @@
 namespace Factory::Machinery {
     template<class T>
     concept HasMaterialKind = requires {
-        { T::kind } -> std::convertible_to<Factory::Data::MaterialKind>;
+        { T::kind } -> std::convertible_to<Data::MaterialKind>;
     };
 
     template<HasMaterialKind T>
@@ -23,11 +23,11 @@ namespace Factory::Machinery {
         using MachineBase::MachineBase;
 
         // Receiver API (via MachineBase)
-        bool CanAccept(Factory::Data::MaterialKind kind) const override {
+        bool CanAccept(Data::MaterialKind kind) const override {
             return kind == T::kind;
         }
 
-        bool TryReceive(Factory::Data::AnyMaterial&& material) override {
+        bool TryReceive(Data::AnyMaterial&& material) override {
             if (auto* p = std::get_if<T>(&material)) {
                 input_.push(std::move(*p));
                 return true;
@@ -36,41 +36,43 @@ namespace Factory::Machinery {
         }
 
         void EnqueueCommand(ProcessCommand command) {
+            std::cout << "[PRODUCER] " << Name() << " added process command to queue" << std::endl;
             Enqueue(std::move(command));
         }
 
     protected:
-        void OnProcess(const ProcessCommand& cmd) override {
+        bool OnProcess(const ProcessCommand& cmd) override {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             if (cmd.kind != T::kind) {
-                std::cout << "[MACHINE] " << Name() << " ignoring process request for kind="
-                          << Factory::Data::toString(cmd.kind) << "\n";
-                return;
+                std::cout << "[PRODUCER] " << Name() << " material kind mismatch for processing: got="
+                          << Data::toString(cmd.kind) << " expected: " << Data::toString(T::kind) << "\n";
+                return false;
             }
             if (input_.empty()) {
-                std::cout << "[MACHINE] " << Name() << " has no input for kind=" << Factory::Data::toString(T::kind) << "\n";
-                return;
+                std::cout << "[PRODUCER] " << Name() << " has no material of kind " << Data::toString(T::kind) << "\n";
+                return false;
             }
 
             T item = std::move(input_.front());
             input_.pop();
             ProcessOne(std::move(item));
+            return true;
         }
 
         // Optional helper for derived producers: store output material for later pickup.
-        void Emit(Factory::Data::AnyMaterial&& out) {
+        void Emit(Data::AnyMaterial&& out) {
             outputs_.push(std::move(out));
         }
 
-        bool TryPopOutput(Factory::Data::MaterialKind kind, Factory::Data::AnyMaterial& out) {
+        bool TryPopOutput(Data::MaterialKind kind, Data::AnyMaterial& out) {
             if (outputs_.empty()) return false;
-            std::queue<Factory::Data::AnyMaterial> rest;
+            std::queue<Data::AnyMaterial> rest;
             bool found = false;
 
             while (!outputs_.empty()) {
                 auto item = std::move(outputs_.front());
                 outputs_.pop();
-                if (!found && Factory::Data::kind_of(item) == kind) {
+                if (!found && Data::kind_of(item) == kind) {
                     out = std::move(item);
                     found = true;
                     continue;
@@ -85,7 +87,7 @@ namespace Factory::Machinery {
 
     private:
         std::queue<T> input_;
-        std::queue<Factory::Data::AnyMaterial> outputs_;
+        std::queue<Data::AnyMaterial> outputs_;
     };
 }
 

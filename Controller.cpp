@@ -9,38 +9,45 @@ namespace Factory {
     Controller::Controller() = default;
 
     void Controller::Setup() {
-        auto arm1 = std::make_unique<Factory::Machinery::Mover>("arm-1");
+        for (auto* machine : machines) {
+
+        }
         arm1_ = arm1.get();
         onTransportRequested.connect(
             [arm1_ptr = arm1.get()](
                     Machinery::Mover* arm,
                     Factory::Data::MaterialKind kind,
-                    Machinery::MachineBase& destination) {
+                    Machinery::MachineBase& destination,
+                    std::promise<bool> &cmdCompleted) {
                 if (arm != arm1_ptr) {
                     return;
                 }
-                Machinery::TransportCommand command {kind, destination};
+                Machinery::TransportCommand command {kind, destination, cmdCompleted};
                 arm1_ptr->EnqueueCommand(std::move(command));
             }
         );
         arm1->StartThread();
-        machines.push_back(std::move(arm1));
 
         auto cnc1 = std::make_unique<Factory::Machinery::CNCMachine<Factory::Data::MetalPipe>>("CNC-1");
         cnc1_ = cnc1.get();
         onProcessRequested.connect(
             [cnc1_ptr = cnc1.get()](
                     Factory::Data::MaterialKind kind,
-                    Machinery::MachineBase& target) {
+                    Machinery::MachineBase& target,
+                    std::promise<bool> &cmdCompleted) {
                 if (&target != cnc1_ptr) {
                     return;
                 }
-                Machinery::ProcessCommand command {kind};
+                Machinery::ProcessCommand command {kind, cmdCompleted};
                 cnc1_ptr->EnqueueCommand(std::move(command));
             }
         );
         cnc1->StartThread();
-        machines.push_back(std::move(cnc1));
+    }
+
+    void Controller::AddMachine(Machinery::MachineBase *machine) {
+        std::cout << "[CONTROLLER] Adding machine: " << machine->Name() << std::endl;
+        machines.push_back(machine);
     }
 
     Factory::Machinery::Mover& Controller::Arm1() {
@@ -57,26 +64,46 @@ namespace Factory {
         return *cnc1_;
     }
 
-    void Controller::executeJob(Factory::Job job) {
+    void Controller::executeJob(Job job) {
         int stepCounter = 1;
+        int retries = 0;
         while (!job.stepsEmpty()) {
+            std::cout << "[CONTROLLER] job: " << job.name() << " executing step number " << stepCounter << ". Attempt number: " << retries + 1<< std::endl;
             const auto& currentStep = job.getNextStep();
-            executeJobStep(currentStep);
+            std::promise<bool> promise;
+            auto future = promise.get_future();
 
+            executeJobStep(currentStep, promise);
+            // Wait for step to complete
+            future.wait();
+
+            bool success = future.get();
+            if (!success) {
+                std::cout << "[CONTROLLER] job: " << job.name() << " step number " << stepCounter << " failed" << std::endl;
+                if (retries >= 2) {
+                    std::cout << "[CONTROLLER] job: " << job.name() << " step number " << stepCounter << " exceeded max retries, aborting job" << std::endl;
+                    break;
+                }
+                retries++;
+                continue;
+            }
+            std::cout << "[CONTROLLER] job: " << job.name() << " step number " << stepCounter << " completed successfully" << std::endl;
             job.popStep();
-            std::cout << "job: " << job.name() << " executing step number " << stepCounter << std::endl;
             stepCounter++;
+
         }
-        std::cout << "job: " << job.name() << " finished" << std::endl;
+        std::cout << "[CONTROLLER] job: " << job.name() << " finished" << std::endl;
     }
 
-    void Controller::executeJobStep(const Factory::JobStep& step) {
-        std::visit([this](const auto& s) {
+    void Controller::executeJobStep(const Factory::JobStep& step, std::promise<bool>& promise) {
+
+
+        std::visit([this, &promise](const auto& s) {
             using S = std::decay_t<decltype(s)>;
             if constexpr (std::is_same_v<S, Factory::MoveStep>) {
-                onTransportRequested(&s.mover.get(), s.material, s.destination.get());
+                onTransportRequested(&s.mover.get(), s.material, s.destination.get(), promise);
             } else if constexpr (std::is_same_v<S, Factory::ProcessStep>) {
-                onProcessRequested(s.material, s.executor.get());
+                onProcessRequested(s.material, s.executor.get(), promise);
             }
         }, step);
     }
