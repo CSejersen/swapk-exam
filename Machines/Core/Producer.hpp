@@ -35,11 +35,6 @@ namespace Factory::Machinery {
             return false;
         }
 
-        void EnqueueCommand(ProcessCommand command) {
-            std::cout << "[PRODUCER] " << Name() << " added process command to queue" << std::endl;
-            Enqueue(std::move(command));
-        }
-
     protected:
         bool OnProcess(const ProcessCommand& cmd) override {
             std::this_thread::sleep_for(std::chrono::milliseconds(500));

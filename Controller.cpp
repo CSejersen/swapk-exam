@@ -75,18 +75,7 @@ namespace Factory {
         }
 
         Machinery::ProcessCommand command{kind, cmdCompleted};
-        // We need to cast to the correct producer type to call EnqueueCommand
-        // Since we verified this is a producer at registration time via traits,
-        // we use the base class Enqueue mechanism
-        // Note: EnqueueCommand is on Producer<T>, but we store MachineBase*
-        // The signal system will route to the correct handler
-        
-        // For now, we'll use a dynamic approach since Producer<T> is templated
-        // In a real system, you might use a type-erased command interface
-        if (auto* producer = dynamic_cast<Machinery::Producer<Data::MetalPipe>*>(targetProducer)) {
-            producer->EnqueueCommand(std::move(command));
-        }
-        // Add other material types as needed
+        targetProducer->EnqueueCommand(std::move(command));
     }
 
     void Controller::executeJob(Job job) {

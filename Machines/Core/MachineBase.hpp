@@ -71,14 +71,23 @@ namespace Factory::Machinery {
             }
         }
 
-    protected:
-        void Enqueue(Command const &cmd) {
+        void EnqueueCommand(Command const &cmd) {
+            std::visit([this](const auto& c) {
+                using C = std::decay_t<decltype(c)>;
+                if constexpr (std::is_same_v<C, TransportCommand>) {
+                    std::cout << "[MOVER] " << Name() << " enqueued transport command" << std::endl;
+                } else if constexpr (std::is_same_v<C, ProcessCommand>) {
+                    std::cout << "[PRODUCER] " << Name() << " enqueued process command" << std::endl;
+                }
+            }, cmd);
             {
                 std::lock_guard<std::mutex> lock(workMutex_);
                 workQueue_.push(cmd);
             }
             workCondition_.notify_one();
         }
+
+    protected:
 
         virtual bool OnTransport(const TransportCommand&) {return false;}
         virtual bool OnProcess(const ProcessCommand&) {return false;}

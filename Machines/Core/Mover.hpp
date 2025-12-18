@@ -10,12 +10,6 @@ namespace Factory::Machinery {
         bool TryReceive(Factory::Data::AnyMaterial&& material) override;
         bool CanAccept(Factory::Data::MaterialKind) const override { return true; }
 
-        // Mover-specific public API for scheduling work
-        void EnqueueCommand(TransportCommand command) {
-            std::cout << "[MOVER] " << Name() << " added transport command to queue" << std::endl;
-            Enqueue(std::move(command));
-        }
-
     protected:
         bool OnTransport(const TransportCommand& cmd) override;
 
