@@ -53,15 +53,15 @@ namespace Factory::Machinery {
         }
 
         // Optional helper for derived producers: store output material for later pickup.
-        void Emit(Data::AnyMaterial&& out) {
-            outputs_[Data::kind_of(out)].push(std::move(out));
+        void StoreProduct(Data::AnyMaterial&& out) {
+            outputs_.push(std::move(out));
         }
 
         virtual void ProcessOne(T&& item) = 0;
 
     private:
         std::queue<T> inventory_;
-        std::unordered_map<Data::MaterialKind, std::queue<Data::AnyMaterial>> outputs_;
+        std::queue<Data::AnyMaterial> outputs_;
     };
 }
 
