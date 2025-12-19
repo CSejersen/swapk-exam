@@ -23,7 +23,7 @@ int main() {
 
     // Create a job with move and process steps
     Job job("demo-job");
-    job.addStep(MoveStep{arm1, Data::MaterialKind::MetalPipe, cnc1});
+    job.addStep(MoveStep{arm1, Data::MaterialKind::MetalPipe,, cnc1});
     job.addStep(ProcessStep{cnc1, Data::MaterialKind::MetalPipe, Data::MaterialKind::MetalPipeHalf});
     
     // Extra step to demonstrate retry behavior when there's nothing left to process

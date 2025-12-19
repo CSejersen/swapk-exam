@@ -25,6 +25,8 @@ add_executable(swapk_exam main.cpp
         Job.cpp
         Job.hpp
         Shared.hpp
+        Machines/Core/ResourceStation.cpp
+        Machines/Core/ResourceStation.h
 )
 
 

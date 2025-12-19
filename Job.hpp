@@ -14,6 +14,7 @@ namespace Factory {
     struct MoveStep {
         std::reference_wrapper<Machinery::Mover> mover;
         Data::MaterialKind material;
+        std::reference_wrapper<Machinery::MachineBase> source;
         std::reference_wrapper<Machinery::MachineBase> destination;
     };
 

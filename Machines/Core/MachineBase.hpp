@@ -19,6 +19,7 @@ namespace Factory::Machinery {
 
     struct TransportCommand {
         Data::MaterialKind material_kind;
+        MachineBase& source;
         MachineBase& destination;
         std::promise<StepStatus> &cmdCompleted;
     };
