@@ -8,13 +8,17 @@ namespace Factory::Machinery {
         using MachineBase::MachineBase;
 
         // Receiver API (via MachineBase)
+        /**
+         *
+         * @param material
+         * @throws std::runtime_error for all materials
+         * guarantee: strong
+         * no changes to machine state on throws
+         */
         void TryReceive(Data::AnyMaterial&& material) override;
-        bool CanAccept(Data::MaterialKind) const noexcept override { return true; }
+        bool CanAccept(Data::MaterialKind) const noexcept override { return false; }
 
     protected:
         StepStatus OnTransport(const TransportCommand& cmd) override;
-
-    private:
-        std::unordered_map<Data::MaterialKind, std::queue<Data::AnyMaterial>> inventory_;
     };
 }

@@ -95,13 +95,13 @@ This would make the intent explicit and prevent accidental misuse.
 
 C++20 concepts are used to constrain template parameters, providing clear compile-time requirements.
 
-**Best Example: `CNCCompatible` concept and `HasMaterialKind` concept**
+**Best Example: `Cuttable` concept and `HasMaterialKind` concept**
 
 ```cpp
 // From MachineConepts.hpp
 namespace Factory::Data {
     template<class T>
-    concept CNCCompatible = requires(T t) {
+    concept Cuttable = requires(T t) {
         t.cutInHalf();
     };
 }
@@ -116,24 +116,24 @@ template<HasMaterialKind T>
 class Producer : public MachineBase { ... };
 ```
 
-The `CNCCompatible` concept enforces that any material type used with `CNCMachine` must have a `cutInHalf()` method. The `HasMaterialKind` concept ensures that material types have a static `kind` member that is convertible to `MaterialKind`.
+The `Cuttable` concept enforces that any material type used with `Cutter` must have a `cutInHalf()` method. The `HasMaterialKind` concept ensures that material types have a static `kind` member that is convertible to `MaterialKind`.
 
-**Usage in CNCMachine:**
+**Usage in Cutter:**
 
 ```cpp
-// From Machines/CNCMachine.hpp
-template<Data::CNCCompatible T>
-class CNCMachine : public Producer<T> {
+// From Machines/Cutter.hpp
+template<Data::Cuttable T>
+class Cutter : public Producer<T> {
 private:
     void ProcessOne(T&& item) override {
-        // We can call CNC-only operations, guaranteed by the concept.
+        // We can call cutting operations, guaranteed by the concept.
         auto out = item.cutInHalf();
         this->Emit(Factory::Data::AnyMaterial{std::move(out)});
     }
 };
 ```
 
-By constraining `CNCMachine` with `CNCCompatible`, the compiler guarantees at instantiation time that `item.cutInHalf()` is a valid call. This provides better error messages than traditional SFINAE and documents the requirements directly in the template signature.
+By constraining `Cutter` with `Cuttable`, the compiler guarantees at instantiation time that `item.cutInHalf()` is a valid call. This provides better error messages than traditional SFINAE and documents the requirements directly in the template signature.
 
 ---
 
@@ -507,7 +507,7 @@ bool stepsEmpty() const noexcept { return steps_.empty(); }
 |---------|--------------|-------|
 | Namespaces | ✅ Yes | C++17 nested namespace syntax |
 | Move Semantics & Rule of 5 | ✅ Partial | Move semantics used; Rule of 5 not explicitly followed |
-| Concepts & Constraints | ✅ Yes | `CNCCompatible`, `HasMaterialKind` concepts |
+| Concepts & Constraints | ✅ Yes | `Cuttable`, `HasMaterialKind` concepts |
 | Tagging, Traits, & SFINAE | ✅ Yes | `MachineTraits` with `std::void_t` SFINAE |
 | Literals | ❌ No | Only standard library literals used |
 | PMR | ❌ No | Could benefit command queues |

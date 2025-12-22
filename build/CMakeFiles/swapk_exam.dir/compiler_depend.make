@@ -818,6 +818,7 @@ CMakeFiles/swapk_exam.dir/Controller.cpp.o: /Users/sejersen/Documents/AU/5-semes
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/format \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/forward_list \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/functional \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/future \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/initializer_list \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/ios \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/iosfwd \
@@ -1028,11 +1029,14 @@ CMakeFiles/swapk_exam.dir/Controller.cpp.o: /Users/sejersen/Documents/AU/5-semes
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Controller.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Job.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/MachineConepts.hpp \
-  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/CNCMachine.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Materials/AnyMaterial.hpp \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Shared.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/MachineBase.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/Mover.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/Producer.hpp \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/ResourceStation.h \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Cutter.hpp \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/MachineTraits.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Materials/AnyMaterial.hpp \
   /opt/homebrew/include/boost/assert.hpp \
   /opt/homebrew/include/boost/assert/source_location.hpp \
@@ -2493,6 +2497,7 @@ CMakeFiles/swapk_exam.dir/Job.cpp.o: /Users/sejersen/Documents/AU/5-semester/swa
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/execution \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/format \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/functional \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/future \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/initializer_list \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/ios \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/iosfwd \
@@ -2684,6 +2689,7 @@ CMakeFiles/swapk_exam.dir/Job.cpp.o: /Users/sejersen/Documents/AU/5-semester/swa
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include/stdint.h \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Job.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Materials/AnyMaterial.hpp \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Shared.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/MachineBase.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/Mover.hpp
 
@@ -3469,6 +3475,7 @@ CMakeFiles/swapk_exam.dir/Machines/Core/Mover.cpp.o: /Users/sejersen/Documents/A
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/execution \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/format \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/functional \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/future \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/initializer_list \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/ios \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/iosfwd \
@@ -3658,7 +3665,9 @@ CMakeFiles/swapk_exam.dir/Machines/Core/Mover.cpp.o: /Users/sejersen/Documents/A
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include/stdarg.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include/stddef.h \
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include/stdint.h \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/MachineConepts.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Materials/AnyMaterial.hpp \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Shared.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/MachineBase.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/Mover.hpp
 
@@ -4479,6 +4488,7 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/format \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/forward_list \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/functional \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/future \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/initializer_list \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/ios \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/iosfwd \
@@ -4688,10 +4698,15 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
   /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/16/include/stdint.h \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Controller.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Job.hpp \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/MachineConepts.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Materials/AnyMaterial.hpp \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Shared.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/MachineBase.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/Mover.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/Producer.hpp \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/ResourceStation.h \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Cutter.hpp \
+  /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/MachineTraits.hpp \
   /Users/sejersen/Documents/AU/5-semester/swapk-exam/Materials/AnyMaterial.hpp \
   /opt/homebrew/include/boost/assert.hpp \
   /opt/homebrew/include/boost/assert/source_location.hpp \
@@ -5517,7 +5532,11 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 
 /opt/homebrew/include/boost/static_assert.hpp:
 
+/opt/homebrew/include/boost/smart_ptr/scoped_ptr.hpp:
+
 /opt/homebrew/include/boost/smart_ptr/make_shared_object.hpp:
+
+/opt/homebrew/include/boost/smart_ptr/make_shared.hpp:
 
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__split_buffer:
 
@@ -5594,10 +5613,6 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 /opt/homebrew/include/boost/signals2/deconstruct_ptr.hpp:
 
 /opt/homebrew/include/boost/scoped_ptr.hpp:
-
-/opt/homebrew/include/boost/mpl/aux_/config/gpu.hpp:
-
-/opt/homebrew/include/boost/preprocessor/variadic/size.hpp:
 
 /opt/homebrew/include/boost/type_traits/copy_reference.hpp:
 
@@ -5738,10 +5753,6 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 /opt/homebrew/include/boost/parameter/aux_/tagged_argument_fwd.hpp:
 
 /opt/homebrew/include/boost/parameter/aux_/tagged_argument.hpp:
-
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_nothrow_destructible.h:
-
-/opt/homebrew/include/boost/smart_ptr/make_shared_array.hpp:
 
 /opt/homebrew/include/boost/parameter/aux_/set.hpp:
 
@@ -6087,6 +6098,10 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 
 /opt/homebrew/include/boost/mpl/aux_/config/integral.hpp:
 
+/opt/homebrew/include/boost/preprocessor/variadic/size.hpp:
+
+/opt/homebrew/include/boost/mpl/aux_/config/gpu.hpp:
+
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/sys/syslimits.h:
 
 /opt/homebrew/include/boost/mpl/aux_/config/gcc.hpp:
@@ -6094,8 +6109,6 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 /opt/homebrew/include/boost/container_hash/hash_fwd.hpp:
 
 /opt/homebrew/include/boost/mpl/aux_/config/forwarding.hpp:
-
-/opt/homebrew/include/boost/smart_ptr/make_shared.hpp:
 
 /opt/homebrew/include/boost/mpl/aux_/has_begin.hpp:
 
@@ -6172,8 +6185,6 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 /opt/homebrew/include/boost/mp11/set.hpp:
 
 /opt/homebrew/include/boost/mp11/integral.hpp:
-
-/opt/homebrew/include/boost/mp11/integer_sequence.hpp:
 
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_move_assignable.h:
 
@@ -6367,13 +6378,15 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 
 /opt/homebrew/include/boost/assert/source_location.hpp:
 
+/opt/homebrew/include/boost/mp11/integer_sequence.hpp:
+
+/Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/MachineTraits.hpp:
+
+/Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Cutter.hpp:
+
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/next.h:
 
 /Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/Producer.hpp:
-
-/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/pstl_backends/cpu_backends/any_of.h:
-
-/Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/CNCMachine.hpp:
 
 /Users/sejersen/Documents/AU/5-semester/swapk-exam/Job.hpp:
 
@@ -6827,6 +6840,8 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/ios:
 
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/future:
+
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/mismatch.h:
 
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/filesystem:
@@ -7065,6 +7080,10 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_nothrow_move_assignable.h:
 
+/opt/homebrew/include/boost/smart_ptr/make_shared_array.hpp:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_nothrow_destructible.h:
+
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__ranges/movable_box.h:
 
 /opt/homebrew/include/boost/mpl/order_fwd.hpp:
@@ -7238,6 +7257,8 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__type_traits/is_specialization.h:
 
 /opt/homebrew/include/boost/mpl/advance_fwd.hpp:
+
+/Users/sejersen/Documents/AU/5-semester/swapk-exam/Shared.hpp:
 
 /opt/homebrew/include/boost/blank.hpp:
 
@@ -8251,8 +8272,6 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__concepts/same_as.h:
 
-/opt/homebrew/include/boost/smart_ptr/scoped_ptr.hpp:
-
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/pstl_rotate_copy.h:
 
 /opt/homebrew/include/boost/preprocessor/inc.hpp:
@@ -8322,6 +8341,8 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__iterator/istream_iterator.h:
 
 /opt/homebrew/include/boost/mpl/aux_/find_if_pred.hpp:
+
+/Users/sejersen/Documents/AU/5-semester/swapk-exam/Machines/Core/ResourceStation.h:
 
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/ranges_partition.h:
 
@@ -8546,6 +8567,8 @@ CMakeFiles/swapk_exam.dir/main.cpp.o: /Users/sejersen/Documents/AU/5-semester/sw
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__functional/mem_fun_ref.h:
 
 /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/locale:
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/pstl_backends/cpu_backends/any_of.h:
 
 /opt/homebrew/include/boost/iterator/detail/type_traits/conjunction.hpp:
 

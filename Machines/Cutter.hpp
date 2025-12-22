@@ -6,20 +6,20 @@
 #include <iostream>
 
 namespace Factory::Machinery {
-    template<Data::CNCCompatible T>
-    class CNCMachine : public Producer<T> {
+    template<Data::Cuttable T>
+    class Cutter : public Producer<T> {
     public:
         using Producer<T>::Producer;
 
     private:
         void ProcessOne(T&& item) override {
-            // We can call CNC-only operations, guaranteed by the concept.
             auto out = item.cutInHalf();
-
+            std::this_thread::sleep_for(std::chrono::milliseconds(3000));
             // Store output for potential later pickup/transport
-            this->StoreProduct(Data::AnyMaterial{std::move(out)});
+            this->Emit(Data::AnyMaterial{std::move(out)});
             std::cout << "[PRODUCER] " << this->Name() << " processed material_kind=" << Data::toString(T::kind) << std::endl;
         }
     };
 }
+
 

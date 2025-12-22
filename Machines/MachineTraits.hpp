@@ -2,6 +2,7 @@
 
 #include "Core/MachineBase.hpp"
 #include "Core/Mover.hpp"
+#include "Core/ResourceStation.h"
 
 #include <type_traits>
 
@@ -12,6 +13,7 @@ namespace Factory::Machinery {
     struct MachineTraits {
         static constexpr bool is_mover = false;
         static constexpr bool is_producer = false;
+        static constexpr bool is_resource_station = false;
     };
 
     // Explicit specialization for Mover
@@ -19,16 +21,26 @@ namespace Factory::Machinery {
     struct MachineTraits<Mover> {
         static constexpr bool is_mover = true;
         static constexpr bool is_producer = false;
+        static constexpr bool is_resource_station = false;
+    };
+
+    // Explicit specialization for ResourceStation
+    template<>
+    struct MachineTraits<ResourceStation> {
+        static constexpr bool is_mover = false;
+        static constexpr bool is_producer = false;
+        static constexpr bool is_resource_station = true;
     };
 
     // SFINAE specialization: detect any type that has EnqueueCommand(ProcessCommand)
-    // This catches all Producer<T> derived types (like CNCMachine<T>)
+    // This catches all Producer<T> derived types (like Cutter<T>)
     template<typename T>
     struct MachineTraits<T, std::void_t<
         decltype(std::declval<T>().EnqueueCommand(std::declval<ProcessCommand>()))
     >> {
         static constexpr bool is_mover = false;
         static constexpr bool is_producer = true;
+        static constexpr bool is_resource_station = false;
     };
 
     // Helper variable templates for cleaner usage
@@ -37,6 +49,9 @@ namespace Factory::Machinery {
 
     template<typename T>
     inline constexpr bool is_producer_v = MachineTraits<T>::is_producer;
+
+    template<typename T>
+    inline constexpr bool is_resource_station_v = MachineTraits<T>::is_resource_station;
 
 } // namespace Factory::Machinery
 

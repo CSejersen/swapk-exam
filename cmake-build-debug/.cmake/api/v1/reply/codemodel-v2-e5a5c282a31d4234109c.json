@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "swapk_exam::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-swapk_exam-Debug-137b2ab5674a66458e6d.json",
+					"jsonFile" : "target-swapk_exam-Debug-6f1aa0c16c4eae10f097.json",
 					"name" : "swapk_exam",
 					"projectIndex" : 0
 				}
@@ -49,12 +49,12 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Users/uffehandrup/Library/CloudStorage/OneDrive-Personligt/Uni/Bachelor/5_semester/AdvProg/swapk-exam/cmake-build-debug",
-		"source" : "/Users/uffehandrup/Library/CloudStorage/OneDrive-Personligt/Uni/Bachelor/5_semester/AdvProg/swapk-exam"
+		"build" : "/Users/sejersen/Documents/AU/5-semester/swapk-exam/cmake-build-debug",
+		"source" : "/Users/sejersen/Documents/AU/5-semester/swapk-exam"
 	},
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 8
+		"minor" : 5
 	}
 }

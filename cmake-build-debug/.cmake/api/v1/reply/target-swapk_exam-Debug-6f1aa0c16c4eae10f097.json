@@ -42,7 +42,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g -std=gnu++20 -arch arm64 -fcolor-diagnostics"
+					"fragment" : "-g -std=gnu++20 -arch arm64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk -fcolor-diagnostics"
 				}
 			],
 			"includes" : 
@@ -66,8 +66,7 @@
 				0,
 				5,
 				8,
-				10,
-				13
+				10
 			]
 		}
 	],
@@ -78,6 +77,10 @@
 		[
 			{
 				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
 				"role" : "flags"
 			}
 		],
@@ -99,8 +102,7 @@
 				0,
 				5,
 				8,
-				10,
-				13
+				10
 			]
 		},
 		{
@@ -116,7 +118,7 @@
 				9,
 				11,
 				12,
-				14
+				13
 			]
 		}
 	],
@@ -161,7 +163,7 @@
 		},
 		{
 			"backtrace" : 1,
-			"path" : "Machines/CNCMachine.hpp",
+			"path" : "Machines/Cutter.hpp",
 			"sourceGroupIndex" : 1
 		},
 		{
@@ -190,12 +192,6 @@
 			"backtrace" : 1,
 			"path" : "Shared.hpp",
 			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "Machines/Core/ResourceStation.cpp",
-			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,

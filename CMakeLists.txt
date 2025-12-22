@@ -18,14 +18,13 @@ add_executable(swapk_exam main.cpp
         Machines/Core/Producer.hpp
         Controller.cpp
         Controller.hpp
-        Machines/CNCMachine.hpp
+        Machines/Cutter.hpp
         Machines/Core/Producer.hpp
         Machines/Core/Mover.cpp
         Machines/Core/Mover.hpp
         Job.cpp
         Job.hpp
         Shared.hpp
-        Machines/Core/ResourceStation.cpp
         Machines/Core/ResourceStation.h
 )
 

@@ -5,33 +5,32 @@
 #include "../../MachineConepts.hpp"
 
 namespace Factory::Machinery{
-    void Mover::TryReceive(Data::AnyMaterial&& material) {
-        std::cout << "[MOVER] " << Name() << " received material" << std::endl;
-        if (!CanAccept(Data::kind_of(material))) {
-            throw std::invalid_argument("Mover received material of non-compatible type");
-        }
-        inventory_[Data::kind_of(material)].push(std::move(material));
+    void Mover::TryReceive(Data::AnyMaterial&&) {
+        throw std::runtime_error("Mover does not accept materials directly");
     }
 
     StepStatus Mover::OnTransport(const TransportCommand& cmd) {
-        // Find first matching item in inventory
-        if (inventory_[cmd.material_kind].empty()) {
-            std::cout << "[MOVER] " << Name() << " has no materials of kind: "<< toString(cmd.material_kind) << std::endl;
+        // Take material from the source
+        auto material = cmd.source.TakeMaterial(cmd.material_kind);
+        if (!material.has_value()) {
+            std::cout << "[MOVER] " << Name() << " source " << cmd.source.Name() 
+                      << " has no materials of kind: " << Data::toString(cmd.material_kind) << std::endl;
             return RETRY;
         }
-
-        const auto it = &inventory_[cmd.material_kind].front();
+        
+        // Simulates time to move
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         try {
-            cmd.destination.TryReceive(std::move(*it));
+            cmd.destination.TryReceive(std::move(*material));
         } catch (std::exception& e) {
             std::cerr << "[MOVER] " << Name() << " the destination: " << cmd.destination.Name()
                       << " failed to receive material_kind=" << Data::toString(cmd.material_kind)
                       << " with error: " << e.what() << std::endl;
             throw;
         }
-        inventory_[cmd.material_kind].pop();
-        std::cout << "[MOVER] " << Name() << " moved material_kind=" << Data::toString(cmd.material_kind) << " to " << cmd.destination.Name() << std::endl;
+        std::cout << "[MOVER] " << Name() << " moved material_kind=" << Data::toString(cmd.material_kind) 
+                  << " from " << cmd.source.Name() << " to " << cmd.destination.Name() << std::endl;
         return SUCCESS;
     }
 

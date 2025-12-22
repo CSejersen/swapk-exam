@@ -5,13 +5,14 @@
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
+#include <optional>
 #include <queue>
 #include <string>
 #include <thread>
 #include <variant>
 #include <iostream>
 #include <future>
-#include "../Shared.hpp"
+#include "../../Shared.hpp"
 
 namespace Factory::Machinery {
 
@@ -29,7 +30,11 @@ namespace Factory::Machinery {
         std::promise<StepStatus> &cmdCompleted;
     };
 
-    using Command = std::variant<TransportCommand, ProcessCommand>;
+    struct GenerateResourceCommand {
+        Data::MaterialKind material_kind;
+    };
+
+    using Command = std::variant<TransportCommand, ProcessCommand, GenerateResourceCommand>;
 
     class MachineBase {
     public:
@@ -39,6 +44,12 @@ namespace Factory::Machinery {
         virtual ~MachineBase() {
             StopThread();
         }
+
+        // Rule of 5: non-copyable and non-movable due to thread and synchronization primitives
+        MachineBase(const MachineBase&) = delete;
+        MachineBase& operator=(const MachineBase&) = delete;
+        MachineBase(MachineBase&&) = delete;
+        MachineBase& operator=(MachineBase&&) = delete;
 
         std::string_view Name() const noexcept { return name_; };
 
@@ -50,8 +61,16 @@ namespace Factory::Machinery {
          * No changes to inventory on throws.
          */
         virtual void TryReceive(Data::AnyMaterial&& material) = 0;
-
         virtual bool CanAccept(Data::MaterialKind kind) const noexcept = 0;
+
+        /**
+         * Attempts to take a material of the specified kind from this machine.
+         * Override in machines that can provide materials (e.g., ResourceStation).
+         * @return The material if available, std::nullopt otherwise
+         */
+        virtual std::optional<Data::AnyMaterial> TakeMaterial(Data::MaterialKind) {
+            return std::nullopt;
+        }
 
         void EmergencyStop() noexcept{
             shouldStop_.store(true);
@@ -154,10 +173,20 @@ namespace Factory::Machinery {
          */
         virtual StepStatus OnProcess(const ProcessCommand&) {return ERROR;}
 
+        /** Override to handle resource generation commands.
+         *
+         * @param cmd GenerateResourceCommand to process
+         * @return StepStatus indicating success or failure
+         * Exception guarantee: strong
+         * No changes to inventory on throws.
+         */
+        virtual StepStatus OnGenerate(const GenerateResourceCommand&) {return ERROR;}
+
     private:
         /** Internal worker loop processing commands from the queue.
          *
-         * Exception guarantee:
+         * Exception guarantee: Basic
+         * Commands may be lost if the unique_lock throws on unlock.
          */
         void WorkerLoop() {
             while (!shouldStop_.load()) {
@@ -171,7 +200,7 @@ namespace Factory::Machinery {
 
                 Command cmd = std::move(workQueue_.front());
                 workQueue_.pop();
-                lock.unlock();
+                lock.unlock(); // if this throws the command is lost. But this should never happen as mutex gets locked above.
 
                 std::visit([this](auto&& c) {
                     using C = std::decay_t<decltype(c)>;
@@ -194,6 +223,12 @@ namespace Factory::Machinery {
                             success = ERROR;
                         }
                         c.cmdCompleted.set_value(success);
+                    } else if constexpr (std::is_same_v<C, GenerateResourceCommand>) {
+                        try {
+                            OnGenerate(c);
+                        } catch (std::exception &e) {
+                            std::cerr << "[ERROR] Failed to execute the generate_material command with error: " << e.what() << std::endl;
+                        }
                     }
                 }, cmd);
             }

@@ -1,6 +1,7 @@
 #include "Controller.hpp"
-#include "Machines/CNCMachine.hpp"
+#include "Machines/Cutter.hpp"
 
+#include <array>
 #include <functional>
 #include <iostream>
 
@@ -18,8 +19,9 @@ namespace Factory {
                 mover,      // targetMover - bound at connection time
                 _1,         // requestedMover - from signal
                 _2,         // material_kind - from signal
-                _3,         // destination - from signal
-                _4          // cmdCompleted - from signal
+                _3,         // source - from signal
+                _4,         // destination - from signal
+                _5          // cmdCompleted - from signal
             )
         );
 
@@ -51,6 +53,7 @@ namespace Factory {
         Machinery::Mover* targetMover,
         Machinery::Mover* requestedMover,
         Data::MaterialKind kind,
+        Machinery::MachineBase& source,
         Machinery::MachineBase& destination,
         std::promise<StepStatus>& cmdCompleted)
     {
@@ -59,7 +62,7 @@ namespace Factory {
             return;
         }
 
-        Machinery::TransportCommand command{kind, destination, cmdCompleted};
+        Machinery::TransportCommand command{kind, source, destination, cmdCompleted};
         targetMover->EnqueueCommand(std::move(command));
     }
 
@@ -130,11 +133,205 @@ namespace Factory {
         std::visit([this, &promise](const auto& s) {
             using S = std::decay_t<decltype(s)>;
             if constexpr (std::is_same_v<S, MoveStep>) {
-                onTransportRequested(&s.mover.get(), s.material, s.destination.get(), promise);
+                onTransportRequested(&s.mover.get(), s.material, s.source.get(), s.destination.get(), promise);
             } else if constexpr (std::is_same_v<S, ProcessStep>) {
                 onProcessRequested(s.material, s.executor.get(), promise);
             }
         }, step);
+    }
+
+    void Controller::StartResourceGeneration() {
+        if (!resourceStation_) {
+            std::cerr << "[CONTROLLER] Cannot start resource generation: no ResourceStation registered" << std::endl;
+            return;
+        }
+        
+        if (generationRunning_.exchange(true)) {
+            std::cout << "[CONTROLLER] Resource generation already running" << std::endl;
+            return;
+        }
+        
+        stopGeneration_.store(false);
+        resourceGenThread_ = std::thread(&Controller::ResourceGenerationLoop, this);
+        std::cout << "[CONTROLLER] Started resource generation thread" << std::endl;
+    }
+
+    void Controller::StopResourceGeneration() noexcept {
+        if (!generationRunning_.exchange(false)) {
+            return;
+        }
+        
+        stopGeneration_.store(true);
+        if (resourceGenThread_.joinable()) {
+            try {
+                resourceGenThread_.join();
+                std::cout << "[CONTROLLER] Stopped resource generation thread" << std::endl;
+            } catch (...) {
+                std::cerr << "[ERROR] Failed to join resource generation thread" << std::endl;
+            }
+        }
+    }
+
+    void Controller::ResourceGenerationLoop() {
+        // Material types to generate in rotation
+        constexpr std::array<Data::MaterialKind, 3> materials = {
+            Data::MaterialKind::MetalPipe,
+            Data::MaterialKind::Gravel,
+            Data::MaterialKind::TitaniumSlab
+        };
+        
+        size_t materialIndex = 0;
+        
+        while (!stopGeneration_.load()) {
+            // Enqueue generation command for current material
+            Machinery::GenerateResourceCommand cmd{materials[materialIndex]};
+            resourceStation_->EnqueueCommand(cmd);
+            
+            // Rotate to next material
+            materialIndex = (materialIndex + 1) % materials.size();
+            
+            // Wait for the configured interval
+            std::this_thread::sleep_for(std::chrono::milliseconds(GENERATION_INTERVAL_MS));
+        }
+    }
+
+    // ==================== Job Queue ====================
+
+    void Controller::EnqueueJob(Job job) {
+        {
+            std::lock_guard<std::mutex> lock(queueMutex_);
+            jobQueue_.push(std::move(job));
+            std::cout << "[CONTROLLER] Job enqueued. Queue size: " << jobQueue_.size() << std::endl;
+        }
+        queueCV_.notify_one();
+    }
+
+    // ==================== Worker Pool ====================
+
+    void Controller::StartWorkers(size_t workerCount) {
+        if (workersRunning_.exchange(true)) {
+            std::cout << "[CONTROLLER] Workers already running" << std::endl;
+            return;
+        }
+
+        stopWorkers_.store(false);
+        workers_.reserve(workerCount);
+
+        for (size_t i = 0; i < workerCount; ++i) {
+            workers_.emplace_back(&Controller::WorkerLoop, this, i);
+        }
+
+        std::cout << "[CONTROLLER] Started " << workerCount << " worker threads" << std::endl;
+    }
+
+    void Controller::StopWorkers() noexcept {
+        if (!workersRunning_.exchange(false)) {
+            return;
+        }
+
+        stopWorkers_.store(true);
+        queueCV_.notify_all();  // Wake up all waiting workers
+
+        for (auto& worker : workers_) {
+            if (worker.joinable()) {
+                try {
+                    worker.join();
+                } catch (...) {
+                    std::cerr << "[ERROR] Failed to join worker thread" << std::endl;
+                }
+            }
+        }
+        workers_.clear();
+        std::cout << "[CONTROLLER] Stopped all worker threads" << std::endl;
+    }
+
+    void Controller::WorkerLoop(size_t workerId) {
+        std::cout << "[WORKER " << workerId << "] Started" << std::endl;
+
+        while (!stopWorkers_.load()) {
+            Job job("");
+            bool hasJob = false;
+
+            {
+                std::unique_lock<std::mutex> lock(queueMutex_);
+                queueCV_.wait(lock, [this] {
+                    return stopWorkers_.load() || !jobQueue_.empty();
+                });
+
+                if (stopWorkers_.load() && jobQueue_.empty()) {
+                    break;
+                }
+
+                if (!jobQueue_.empty()) {
+                    job = std::move(jobQueue_.front());
+                    jobQueue_.pop();
+                    hasJob = true;
+                    std::cout << "[WORKER " << workerId << "] Picked up job: " 
+                              << job.name() << std::endl;
+                }
+            }
+
+            if (hasJob) {
+                try {
+                    executeJob(std::move(job));
+                } catch (const std::exception& e) {
+                    std::cerr << "[WORKER " << workerId << "] Job failed: " 
+                              << e.what() << std::endl;
+                }
+            }
+        }
+
+        std::cout << "[WORKER " << workerId << "] Stopped" << std::endl;
+    }
+
+    // ==================== Job Spawner ====================
+
+    void Controller::StartJobSpawner(std::function<Job()> jobFactory, int intervalMs) {
+        if (spawnerRunning_.exchange(true)) {
+            std::cout << "[CONTROLLER] Job spawner already running" << std::endl;
+            return;
+        }
+
+        jobFactory_ = std::move(jobFactory);
+        spawnerIntervalMs_ = intervalMs;
+        stopSpawner_.store(false);
+
+        spawnerThread_ = std::thread(&Controller::JobSpawnerLoop, this);
+        std::cout << "[CONTROLLER] Started job spawner with interval " 
+                  << intervalMs << "ms" << std::endl;
+    }
+
+    void Controller::StopJobSpawner() noexcept {
+        if (!spawnerRunning_.exchange(false)) {
+            return;
+        }
+
+        stopSpawner_.store(true);
+
+        if (spawnerThread_.joinable()) {
+            try {
+                spawnerThread_.join();
+                std::cout << "[CONTROLLER] Stopped job spawner thread" << std::endl;
+            } catch (...) {
+                std::cerr << "[ERROR] Failed to join job spawner thread" << std::endl;
+            }
+        }
+    }
+
+    void Controller::JobSpawnerLoop() {
+        size_t jobCounter = 0;
+
+        while (!stopSpawner_.load()) {
+            if (jobFactory_) {
+                Job newJob = jobFactory_();
+                EnqueueJob(std::move(newJob));
+                ++jobCounter;
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(spawnerIntervalMs_));
+        }
+
+        std::cout << "[SPAWNER] Total jobs spawned: " << jobCounter << std::endl;
     }
 
 } // namespace Factory
