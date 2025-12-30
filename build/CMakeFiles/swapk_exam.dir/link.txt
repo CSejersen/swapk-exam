@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/swapk_exam.dir/main.cpp.o CMakeFiles/swapk_exam.dir/Controller.cpp.o CMakeFiles/swapk_exam.dir/Machines/Core/Mover.cpp.o CMakeFiles/swapk_exam.dir/Job.cpp.o -o swapk_exam

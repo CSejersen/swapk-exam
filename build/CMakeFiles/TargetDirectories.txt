@@ -1,3 +1,0 @@
-/Users/sejersen/Documents/AU/5-semester/swapk-exam/build/CMakeFiles/swapk_exam.dir
-/Users/sejersen/Documents/AU/5-semester/swapk-exam/build/CMakeFiles/edit_cache.dir
-/Users/sejersen/Documents/AU/5-semester/swapk-exam/build/CMakeFiles/rebuild_cache.dir
